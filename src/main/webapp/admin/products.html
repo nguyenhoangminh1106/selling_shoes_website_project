@@ -1,0 +1,156 @@
+<!-- begin :: Page CSS -->
+<th:block th:fragment="page_css"></th:block>
+<!-- end :: Page CSS -->
+
+<!-- begin :: Content -->
+<th:block th:fragment="content">
+	<div class="kt-portlet kt-portlet--mobile">
+		<div class="kt-portlet__head kt-portlet__head--lg">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon">
+					<i class="kt-font-brand flaticon2-line-chart"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+					Danh Sách Sản Phẩm
+				</h3>
+			</div>
+			<div class="kt-portlet__head-toolbar">
+				<div class="kt-portlet__head-wrapper">
+					<a th:href="@{/adminDashboard}" class="btn btn-clean btn-icon-sm">
+						<i class="la la-long-arrow-left"></i>
+						Quay Lại
+					</a>
+					&nbsp;
+					<div class="dropdown dropdown-inline">
+						<a th:href="@{/addProductForm(page=${page != null ? page : 1})}" class="btn btn-brand btn-icon-sm">
+							<i class="flaticon2-plus"></i> Thêm Mới
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="kt-portlet__body">
+
+			<!--begin: Search Form -->
+			<div class="kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+				<div class="row align-items-center">
+					<div class="col-xl-8 order-2 order-xl-1">
+						<form th:action="@{/searchProduct}" method="get" class="row align-items-center">
+								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+									<div class="kt-input-icon kt-input-icon--left">
+										<input type="text" name="nameSearch" value="" class="form-control" placeholder="Tìm kiếm..." id="generalSearch">
+										<span class="kt-input-icon__icon kt-input-icon__icon--left">
+											<span><i class="la la-search"></i></span>
+										</span>
+									</div>
+								</div>
+								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+									<div class="kt-form__group kt-form__group--inline">
+										<div class="kt-form__label">
+											<label>Trạng thái:</label>
+										</div>
+										<div class="kt-form__control">
+											<select name="status" class="form-control bootstrap-select" id="kt_form_status">
+												<option value="">All</option>
+												<option value="Available">Available</option>
+												<option value="Unavailable">Unavailable</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+									<div class="kt-form__group kt-form__group--inline">
+										<div class="kt-form__label">
+											<label>Brand:</label>
+										</div>
+										<div class="kt-form__control">
+											<input type="text" name="brandName" value="" placeholder="Brand" >
+										</div>
+									</div>
+								</div>
+								
+								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile m-1">
+									<div class="kt-form__group kt-form__group--inline">
+										<div class="kt-form__control">
+											<input type="submit" value="Search" class="btn btn-primary">
+										</div>
+									</div>
+								</div>
+							
+						</form>
+						
+						<div style="margin: 10px; display: flex; justify-content: space-between;"  class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+								<form th:action="@{/getProductList}" method="get">
+								    <input type="hidden" th:name="page" th:value="${page - 1}">
+								    <input class="btn btn-primary" type="submit" value="Back">
+								</form>
+								<form th:action="@{/getProductList}" method="get">
+								    <input type="hidden" th:name="page" th:value="${page + 1}">
+								    <input class="btn btn-primary" type="submit" value="Next">
+								</form>
+						</div>
+					</div>
+					<div class="col-xl-4 order-1 order-xl-2 kt-align-right">
+						<a href="#" class="btn btn-default kt-hidden">
+							<i class="la la-cart-plus"></i> New Order
+						</a>
+						<div class="kt-separator kt-separator--border-dashed kt-separator--space-lg d-xl-none"></div>
+					</div>
+				</div>
+			</div>
+
+			<!--end: Search Form -->
+		</div>
+		<div class="kt-portlet__body kt-portlet__body--fit">
+			<!--begin: Datatable -->
+						<table style="border-collapse: collapse; width: 100%; margin: 20px">
+						        <tr>
+						            <th>ID</th>
+						            <th>Tên sản phẩm</th>
+						            <th>Phiên bản</th>
+						            <th>Giá bán</th>
+						            <th>Nhà phân phối</th>
+						            <th>Danh mục</th>
+						            <th>Trạng thái</th>
+						            <th>Chỉnh sửa</th>
+						            
+						        </tr>
+						        <tr th:each="product : ${PRODUCT_LIST}">
+						            <td th:text="${product.id}"></td>
+						            <td th:text="${product.name}"></td>
+						            <td th:text="${product.versionName}"></td>
+						            <td th:text="${product.formatPrice()}"></td>
+						            <td th:text="${product.brand != null ? product.brand.name : ''}"></td>
+						            <td th:text="${product.category != null ? product.category.name : ''}"></td>
+						            <td th:text="${product.status}"></td>
+						            <td>
+										<a th:href="@{/deleteProduct(page=${page != null ? page : 1}, id=${product.id})}" class="btn btn-sm btn-secondary" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+										<a th:href="@{/updateProductForm(page=${page != null ? page : 1}, id=${product.id})}" class="btn btn-sm btn-secondary">Update</a>
+										
+										<span th:if="${product.status == 'Unavailable'}">
+											<a th:href="@{/changeProductStatus(status=${product.status}, page=${page != null ? page : 1}, id=${product.id})}" class="btn btn-sm btn-secondary">Bán</a>
+											
+										</span>
+										
+										<span th:if="${product.status == 'Available'}">
+											<a th:href="@{/changeProductStatus(status=${product.status}, page=${page != null ? page : 1}, id=${product.id})}" class="btn btn-sm btn-secondary">Ngừng bán</a>
+											
+										</span>
+										
+										
+										
+									</td>
+						        </tr>
+					</table>	
+			<!--end: Datatable -->
+		</div>
+	</div>
+</th:block>
+<!-- end :: Content -->
+
+<!--begin :: Page Script (used by this page) -->
+<th:block th:fragment="page_script">
+	<script src="assets/js/template/products.js" type="text/javascript"></script>
+	<script src="assets/js/pages/crud/metronic-datatable/base/data-ajax.js" type="text/javascript"></script>
+</th:block>
+<!--end :: Page Script -->
